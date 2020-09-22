@@ -28,7 +28,7 @@ class App(QWidget):
         self.qpaint = QPainter()
         self.qpaint.begin(self)
         top = self.header()
-        import_button = self.import_button()
+        file_transfer_button = self.prepare_file_transfer_button()
         slide_tab = self.slide_bar()
         show_event = self.main_show_event()
         self.qpaint.end()
@@ -47,18 +47,18 @@ class App(QWidget):
         self.qpaint.setFont(QFont('Times New Roman',self.header_font))
         self.qpaint.drawText(self.border*2,self.border+self.header_height//2,"Username:..........")
 
-    def import_button(self):
-        self.import_button_width = self.header_height//2 - self.border
-        self.import_button_height = self.header_height - 2*self.border
-        x = self.app_width - 2*self.border -  self.import_button_width
+    def prepare_file_transfer_button(self):
+        self.transfer_button_width = self.header_height//2 - self.border
+        self.transfer_button_height = self.header_height - 2*self.border
+        x = self.app_width - 2*self.border -  self.transfer_button_width
         y = 2*self.border
         self.qpaint.setPen(QColor(Qt.white))
-        self.qpaint.drawRect(x,y,self.import_button_width,self.import_button_height)
-        self.qpaint.fillRect(x,y,self.import_button_width,self.import_button_height,QBrush(Qt.white))
+        self.qpaint.drawRect(x,y,self.transfer_button_width,self.transfer_button_height)
+        self.qpaint.fillRect(x,y,self.transfer_button_width,self.transfer_button_height,QBrush(Qt.white))
 
         self.qpaint.setPen(QColor(Qt.black))
         self.qpaint.setFont(QFont('Times New Roman',self.header_font))
-        self.qpaint.drawText(x+self.import_button_width//4,y+self.import_button_height//2,"+")
+        self.qpaint.drawText(x+self.transfer_button_width//4,y+self.transfer_button_height//2,"+")
 
     def slide_bar(self):
         x = self.border
