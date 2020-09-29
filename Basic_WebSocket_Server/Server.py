@@ -3,7 +3,8 @@ import asyncio
 
 async def hello(websocket, path):
     message = await websocket.recv()
-    greeting = f"This message is from server. It receive message from you. It is '{message}'"
+    print(message)
+    greeting = f"This message is from server. It receive message from you. It is {message}"
     await websocket.send(greeting)
 
 start_server = websockets.serve(hello, "localhost", 8000)

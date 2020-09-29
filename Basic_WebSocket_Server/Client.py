@@ -1,9 +1,9 @@
 import websockets
 import asyncio
 
-async def hello(websocket, path):
+async def hello():
     uri = "ws://localhost:8000"
-    async with websocket.connect(uri) as websocket:
+    async with websockets.connect(uri) as websocket:
         print("You are now connecting with a server.")
         message = input(">>>")
         await websocket.send(message)
