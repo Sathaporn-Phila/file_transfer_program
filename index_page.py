@@ -2,13 +2,15 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PIL.ImageQt import ImageQt
-import sys,image_create
+import sys,image_create,export_file
 
 class Button(QPushButton):
 
     def __init__(self,parent,text):
         super().__init__(parent)
         self.text = text
+        
+    
 class TreeView(QTreeView):
 
     def __init__(self,parent):
@@ -70,6 +72,7 @@ class PublicPage(QWidget):
             item = Button(self,content_button[num])
             item.setStyleSheet("background-color : rgb(0,255,0);")
             item.setText(item.text)
+            self.check_item(item)
             self.main_zone.addWidget(item,num*2,0,2,2)
             self.line += num
 
@@ -87,6 +90,7 @@ class PublicPage(QWidget):
             item = Button(self,self.search_button_function_name[num])
             item.setStyleSheet("background-color : rgb(0,255,100);")
             item.setText(item.text)
+            self.check_item(item)
             self.main_zone.addWidget(item,self.line+1,3+2*(len(content_button)-1)+num,1,1)
         
         
@@ -100,6 +104,14 @@ class PublicPage(QWidget):
         self.new_image.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Preferred)
         self.new_image.setAlignment(Qt.AlignCenter)
         return self.new_image
+
+    def check_item(self,item):
+        
+        if item.text == "Export" :
+            item.clicked.connect(self.export)
+            
+    def export(self):
+        self.dialog = export_file.ExportForm(self.user_name)
 
 ex = PublicPage("Nuieasy")
    
