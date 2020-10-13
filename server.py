@@ -1,15 +1,13 @@
 import websockets
 import asyncio
+import sys
+from class_file import *
 
 async def recvfile(websocket, path):
     filename = await websocket.recv()
     mode = await websocket.recv()
-    f = open(filename, mode)
-    line = await websocket.recv()
-    while line:
-        f.write(line)
-        line = await websocket.recv()
-    f.close()
+    f = File(filename)
+    f.write(mode)
 
 start_server = websockets.serve(recvfile, "localhost", 8000)
 
