@@ -5,7 +5,6 @@ from class_file import *
 
 client_dict = {}
 async def recvfile(websocket, path):
-    client_set.append(websocket)
     while True:
         client_username = await websocket.recv()
         client_dict[client_username] = websocket
