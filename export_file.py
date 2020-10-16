@@ -53,6 +53,7 @@ class ExportForm(QDialog):
                 elif item == "Author : " :
                     textbox.setText(self.user_name)
                     textbox.setReadOnly(True)
+                    self.entry_item.append(textbox)
                     self.form_layout.addRow(label,textbox)  
                 else : 
                     self.entry_item.append(textbox)
@@ -112,7 +113,10 @@ class ExportForm(QDialog):
         self.all_item = {}
         self.name_of_item = ["Title : ","Author : ","File : "]
         for item1,item2 in zip(self.name_of_item,self.entry_item) :
+            print(item1,item2.text())
             self.all_item[item1] = item2.text()
+            if item1 == "File : " :
+                self.all_item["File name"] = QUrl.fromLocalFile(item2.text()).fileName()
         self.all_item["Send to : "] = self.sendItemType
         self.all_item["User to receive : "] = self.dynamic_item[-1].text()
         print(self.all_item)
