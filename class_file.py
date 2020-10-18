@@ -19,14 +19,14 @@ class File:
             print(r)
             r = f.read(1024)
 
-    async def send(self, mode):
-        f = open(self.filename, mode)
+    async def send(self):
+        f = open(self.filename, 'r')
         for line in f:
             await websocket.send(line)
         f.close()
     
-    async def write(self, mode):
-        f = open(self.filename, mode)
+    async def write(self):
+        f = open(self.filename, 'w')
         line = await websocket.recv()
         while line:
             f.write(line)

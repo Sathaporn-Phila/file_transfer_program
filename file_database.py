@@ -9,6 +9,12 @@ class File_database(object):
         self.conn.execute("""CREATE TABLE IF NOT EXISTS users(
                             username text PRINARY KEY,
                             password text NOT NULL);""")
+        self.conn.execute("""CREATE TABLE IF NOT EXISTS public(
+                            title text ,
+                            author text NOT NULL,
+                            filename text NOT NULL,
+                            data text NOT NULL,
+                            type_form text );""")
     
     def register_account(self,username,password):
         self.cur.execute("""INSERT INTO users (username,password) VALUES (?,?)""",(username,password))
@@ -76,6 +82,13 @@ class File_database(object):
                 else :
                     data.append(item)
             return data
+    
+    def add_public(self,title,author,filename,data,type_form):
+        try :
+            sql_command = """INSERT INTO public(title,author,filename,data,type_form) VALUES (?,?,?,?,?)"""
+            self.cur.execute(sql_command,(title,author,filename,data,type_form,))
+        except Error as e:
+            print(e)
 
     def login(self,user,password):
         try :
