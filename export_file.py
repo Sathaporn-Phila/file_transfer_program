@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
-import websocket
+import websockets
 import asyncio
 from pathlib import Path
 
@@ -123,10 +123,10 @@ class ExportForm(QDialog):
         #asyncio.run(lambda : self.send_item(self.all_item))
         self.close()
     
-    '''async def send_item(item):
-        async with websocket.server(self.uri) as websocket :
+    async def send_item(item):
+        async with websockets.connect(self.uri) as websocket :
             await websocket.send(item)
-            websocket.close()'''
+            websocket.close()
 
     def cancel_command(self):
         self.close()
