@@ -2,23 +2,25 @@ import websockets
 import asyncio
 import sys
 from class_file import *
+from file_database import *
 
+db = File_database()
+print("Now connecting with database.")
 client_dict = {}
 async def recvfile(websocket, path):
+    client_username = await websocket.recv()
+    client_password = await websocket.recv()
+    db.login(client_username, client_password)
+    client_dict[[client_username, client_password]] = websocket
     while True:
-        client_username = await websocket.recv()
-        client_dict[client_username] = websocket
         comm = await websocket.recv()
         if comm == 'send_direct':
-            filename = await websocket.recv()
-            mode = await websocket.recv()
-            dest = await websocket.recv()
-            recv_line = await websocket.recv()
-            while recv_line:
-                await client_dict[dest].send(recv_line)
+            file_data = await websocket.recv()
+            f = File(file_data[2])
+            f.write(mode)
+            db.add_inbox(dest,file_data[0],file_data[1],file_data[2],file_data[3],file_data[4])
         elif comm == 'send_public':
             filename = await websocket.recv()
-            mode = await websocket.recv()
             f = File(filename)
             f.write(mode)
 start_server = websockets.serve(recvfile, "localhost", 8000)
