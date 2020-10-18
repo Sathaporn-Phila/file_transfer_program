@@ -2,10 +2,15 @@ import websockets
 import asyncio
 import sys
 from class_file import *
+from index_page import *
 
 uri = "ws://localhost:8000"
 async def sendfile():
     async with websockets.connect(uri) as websocket:
+        username = input("Username : ")
+        password = input("Password : ")
+        await websocket.send(username)
+        await websocket.send(password)
         while True:
             filename = input("Enter your file to send (Full path): ")
             try:
@@ -32,7 +37,8 @@ async def sendfile():
 
 async def checksenderfile():
     async with websockets.connect(uri) as websocket:
-        await websocket.send(f.check())
+        file_size = f.check()
+        await websocket.send(file_size)
         websocket.close()
 
 asyncio.get_event_loop().run_until_complete(sendfile())
