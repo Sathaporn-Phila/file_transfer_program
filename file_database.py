@@ -19,6 +19,7 @@ class File_database(object):
     def register_account(self,username,password):
         self.cur.execute("""INSERT INTO users (username,password) VALUES (?,?)""",(username,password))
         self.send_history_table(username)
+        self.inbox_table(username)
         print("Register Complete...")
     
     def send_history_table(self,username):
@@ -35,6 +36,8 @@ class File_database(object):
             self.cur.execute(sql_command,(title,author,filename,data,type_form,))
         except Error as e:
             print(e)
+        else :
+            self.conn.commit()
     
     def get_send_history(self,type_widget,file_name_search = None):
         try:
@@ -66,6 +69,8 @@ class File_database(object):
             self.cur.execute(sql_command,(title,author,filename,data,type_form,))
         except Error as e:
             print(e)
+        else:
+            self.conn.commit()
     
     def get_inbox(self,type_widget,file_name_search = None):
         try:
@@ -89,7 +94,8 @@ class File_database(object):
             self.cur.execute(sql_command,(title,author,filename,data,type_form,))
         except Error as e:
             print(e)
-
+        else:
+            self.conn.commit()
     def login(self,user,password):
         try :
             self.cur.execute("""SELECT * FROM users WHERE username = ? AND password = ?""",(user,password,))
