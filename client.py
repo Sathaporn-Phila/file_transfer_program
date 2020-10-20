@@ -2,17 +2,17 @@ import websockets
 import asyncio
 import sys
 from class_file import *
-from index_page import *
 
-uri = "ws://localhost:8000"
 class Client(object):
     
     class FTP(Client):
         
-        def __init__(self):
+        async def __init__(self):
             super().__init__()
             self.conn = await websockets.connect("ws://{self.ip}:{self.port}")
-        
+            #while True:
+                #await self.conn.ping()
+                #await asyncio.sleep(10)
         async def login(self, username, password):
             await self.conn.send(username)
             await self.conn.send(password)
@@ -46,7 +46,7 @@ class Client(object):
             else:
                 print("file incompletely send")
     
-    def __init__(self, addr, port):
+    def __init__(self, addr='localhost', port='8000'):
         self.address = addr
         self.port = port
         self.func = self.FTP()
@@ -56,5 +56,3 @@ class Client(object):
     
     def do_sendfile(self, title, author, mode, filename, newfilename, dest=""):
         asyncio.get_event_loop().run_until_complete(self.func.sendfile(title, author, mode, filename, newfilename, dest=""))
-
-asyncio.get_event_loop().run_until_complete(sendfile())

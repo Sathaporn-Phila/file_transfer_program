@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import sys
-import websockets
+import sys,file_database
+import websocket
 import asyncio
 from pathlib import Path
+
 
 class ExportForm(QDialog):
 
@@ -13,6 +14,7 @@ class ExportForm(QDialog):
     def __init__(self,user_name):
         super().__init__()
         self.user_name = user_name
+        self.my_database = file_database.File_database()
         self.init_ui()
 
     def init_ui(self):
@@ -96,10 +98,10 @@ class ExportForm(QDialog):
         if bool_type :
             textbox.setStyleSheet("background-color : rgb(216,216,216);")
             textbox.clear()
-            self.sendItemType = "send_private"
+            self.sendItemType = "send_public"
         else :
             textbox.setStyleSheet("background-color : rgb(255,255,255);")
-            self.sendItemType = "send_public"
+            self.sendItemType = "send_private"
 
     def file_dialog(self):
         home_dir = str(Path.home)
@@ -113,20 +115,21 @@ class ExportForm(QDialog):
         self.all_item = {}
         self.name_of_item = ["Title : ","Author : ","File : "]
         for item1,item2 in zip(self.name_of_item,self.entry_item) :
-            print(item1,item2.text())
             self.all_item[item1] = item2.text()
             if item1 == "File : " :
                 self.all_item["File name"] = QUrl.fromLocalFile(item2.text()).fileName()
+                self.all_item["Type file"] = item2.text()[item2.text().find('.')+1:]
         self.all_item["Send to : "] = self.sendItemType
         self.all_item["User to receive : "] = self.dynamic_item[-1].text()
-        print(self.all_item)
+        self.my_database.send_item(self.all_item)
+        
         #asyncio.run(lambda : self.send_item(self.all_item))
         self.close()
     
-    async def send_item(item):
-        async with websockets.connect(self.uri) as websocket :
+    '''async def send_item(item):
+        async with websocket.server(self.uri) as websocket :
             await websocket.send(item)
-            websocket.close()
+            websocket.close()'''
 
     def cancel_command(self):
         self.close()
