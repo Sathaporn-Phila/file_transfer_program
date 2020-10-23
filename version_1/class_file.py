@@ -24,7 +24,6 @@ class File:
         f = open(r"{}".format(self.filename), 'r')
         for line in f:
             await conn.send(line)
-            asyncio.sleep(1)
         f.close()
     
     async def write(self):
@@ -33,7 +32,6 @@ class File:
         while line:
             f.write(line)
             line = await conn.recv()
-            asyncio.sleep(1)
         f.close()
     
     def check(self):

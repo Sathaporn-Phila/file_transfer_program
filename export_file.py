@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys,file_database
-import websocket
+import websockets
 import asyncio
 from pathlib import Path
 

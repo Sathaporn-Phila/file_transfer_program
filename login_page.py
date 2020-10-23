@@ -87,6 +87,8 @@ class Controller :
     def __init__(self):
         self.app = QApplication(sys.argv)
         self.show_login()
+        #self.c = Client("localhost", "8000")
+        #self.c.do_start()
     def show_login(self):
         self.loginPage = Login_page()
         self.loginPage.switch_window.connect(lambda:self.show_index_page(self.loginPage.username))
@@ -102,7 +104,6 @@ class Controller :
         self.main_page.close()
         self.show_login()
 
-def test():
+if __name__ == "__main__":
     program_test = Controller()
     sys.exit(program_test.app.exec_())
-test()

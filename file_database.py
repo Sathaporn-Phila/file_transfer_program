@@ -62,7 +62,7 @@ class File_database(object):
                             data text NOT NULL,
                             type_form text );""".format(username))
 
-    def add_inbox(self,target,title,author,filename,data,type_form):
+    def add_inbox(self,title,author,filename,data,type_form,target):
         try :
             sql_command = """INSERT INTO {}_inbox(title,author,filename,data,type_form) VALUES (?,?,?,?,?)""".format(target)
             self.cur.execute(sql_command,(title,author,filename,data,type_form,))
@@ -130,7 +130,7 @@ class File_database(object):
         try :
             self.cur.execute("""SELECT * FROM users WHERE username = ? AND password = ?""",(user,password,))
         except :
-            print("The Username is invalid")
+            return False
         else :
             try :
                 self.username = self.cur.fetchall()[0][0]
@@ -138,7 +138,7 @@ class File_database(object):
                 return None
             else:
                 print('Login complete...')
-                return self.username
+                return "pass"
 
     def logout(self):
         self.username = ""

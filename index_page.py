@@ -158,3 +158,7 @@ class PublicPage(QWidget):
 
         if self.run_out :
             sys.exit()
+
+if __name__ == "__main__":
+    foo = PublicPage("USERNAME")
+    sys.exit(foo.app.exec_())

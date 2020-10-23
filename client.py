@@ -5,14 +5,18 @@ from class_file import *
 
 class Client(object):
     
-    class FTP(Client):
+    class FTP(object):
         
-        async def __init__(self):
-            super().__init__()
-            self.conn = await websockets.connect("ws://{self.ip}:{self.port}")
-            #while True:
-                #await self.conn.ping()
-                #await asyncio.sleep(10)
+        def __init__(self, addr, port):
+            self.address = addr
+            self.port = port
+            self.uri = f"ws://{self.address}:{self.port}"
+
+        async def start(self):
+            conn = await websockets.connect(self.uri)
+            self.conn = conn
+            await self.conn.send("FUCK U")
+
         async def login(self, username, password):
             await self.conn.send(username)
             await self.conn.send(password)
@@ -47,12 +51,17 @@ class Client(object):
                 print("file incompletely send")
     
     def __init__(self, addr='localhost', port='8000'):
-        self.address = addr
-        self.port = port
-        self.func = self.FTP()
+        self.func = self.FTP(addr, port)
     
+    def do_start(self):
+        asyncio.get_event_loop().run_until_complete(self.func.start())
+        
     def do_login(self, username, password):
         asyncio.get_event_loop().run_until_complete(self.func.login(username, password))
     
     def do_sendfile(self, title, author, mode, filename, newfilename, dest=""):
         asyncio.get_event_loop().run_until_complete(self.func.sendfile(title, author, mode, filename, newfilename, dest=""))
+
+if __name__ == "__main__":
+    c = Client()
+    c.do_start()
