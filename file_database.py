@@ -13,7 +13,6 @@ class File_database(object):
                             title text ,
                             author text NOT NULL,
                             filename text NOT NULL,
-                            data text NOT NULL,
                             type_form text );""")
     def register_account(self,username,password):
         self.cur.execute("""INSERT INTO users (username,password) VALUES (?,?)""",(username,password))
@@ -26,21 +25,20 @@ class File_database(object):
                             title text ,
                             author text NOT NULL,
                             filename text NOT NULL,
-                            data text NOT NULL,
                             type_form text );""".format(username))
     
-    def add_send_history(self,title,author,filename,data,type_form):
+    def add_send_history(self,title,author,filename,type_form):
         try :
-            sql_command = """INSERT INTO {}_send(title,author,filename,data,type_form) VALUES (?,?,?,?,?)""".format(self.username)
-            self.cur.execute(sql_command,(title,author,filename,data,type_form,))
+            sql_command = """INSERT INTO {}_send(title,author,filename,type_form) VALUES (?,?,?,?)""".format(self.username)
+            self.cur.execute(sql_command,(title,author,filename,type_form,))
         except Error as e:
             print(e)
         else :
             self.conn.commit()
     
-    def get_send_history(self,file_name_search = None):
+    def get_send_history(self, username, file_name_search = None):
         try:
-            sql_command = """SELECT * FROM {}_send """.format(self.username)
+            sql_command = """SELECT * FROM {}_send """.format(username)
             self.cur.execute(sql_command)
         except Error as e :
             print(e)
@@ -59,21 +57,20 @@ class File_database(object):
                             title text ,
                             author text NOT NULL,
                             filename text NOT NULL,
-                            data text NOT NULL,
                             type_form text );""".format(username))
 
-    def add_inbox(self,title,author,filename,data,type_form,target):
+    def add_inbox(self,title,author,filename,type_form,target):
         try :
-            sql_command = """INSERT INTO {}_inbox(title,author,filename,data,type_form) VALUES (?,?,?,?,?)""".format(target)
-            self.cur.execute(sql_command,(title,author,filename,data,type_form,))
+            sql_command = """INSERT INTO {}_inbox(title,author,filename,type_form) VALUES (?,?,?,?)""".format(target)
+            self.cur.execute(sql_command,(title,author,filename,type_form,))
         except Error as e:
             print(e)
         else:
             self.conn.commit()
     
-    def get_inbox(self,file_name_search = None):
+    def get_inbox(self, username, file_name_search = None):
         try:
-            sql_command = """SELECT * FROM {}_inbox """.format(self.username)
+            sql_command = """SELECT * FROM {}_inbox """.format(username)
             self.cur.execute(sql_command)
         except Error as e :
             print(e)
@@ -87,10 +84,10 @@ class File_database(object):
                     data.append(item)
             return data
     
-    def add_public(self,title,author,filename,data,type_form):
+    def add_public(self,title,author,filename,type_form):
         try :
-            sql_command = """INSERT INTO public(title,author,filename,data,type_form) VALUES (?,?,?,?,?)"""
-            self.cur.execute(sql_command,(title,author,filename,data,type_form,))
+            sql_command = """INSERT INTO public(title,author,filename,type_form) VALUES (?,?,?,?)"""
+            self.cur.execute(sql_command,(title,author,filename,type_form,))
         except Error as e:
             print(e)
         else:
@@ -133,12 +130,12 @@ class File_database(object):
             return False
         else :
             try :
-                self.username = self.cur.fetchall()[0][0]
+                username = self.cur.fetchall()[0][0]
             except IndexError :
-                return None
+                return False
             else:
                 print('Login complete...')
-                return "pass"
+                return True
 
     def logout(self):
         self.username = ""
@@ -148,8 +145,8 @@ class File_database(object):
         row = self.cur.fetchall()
         for item in row :
             print(item)
-    def check_all_item(self):
-        sql_command = """SELECT * FROM {}_send """.format(self.username)
+    def check_all_item(self, username):
+        sql_command = """SELECT * FROM {}_send """.format(username)
         self.cur.execute(sql_command)
         row = self.cur.fetchall()
         for item in row :
@@ -184,13 +181,13 @@ class File_database(object):
                 except :
                     pass
                 else:
-                    self.add_public(title,owner,fileName,data,type_file)
+                    self.add_public(title,owner,fileName,type_file)
             else:
                 receiver_username = self.search_name(receiver)
                 print(receiver_username)
                 if receiver_username != None :
-                    self.add_send_history(title,owner,fileName,data,type_file)
-                    self.add_inbox(receiver_username,title,owner,fileName,data,type_file)
+                    self.add_send_history(title,owner,fileName,type_file)
+                    self.add_inbox(receiver_username,title,owner,fileName,type_file)
                     print(self.get_inbox())
                 self.username = owner
 

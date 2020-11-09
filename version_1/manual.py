@@ -5,77 +5,43 @@ import json
 from class_file import *
 
 async def main():
-    async with websockets.connect("ws://localhost:8000") as conn:
+    ip = "localhost" # Enter your server ip.
+    port = "8000" # Enter your server port.
+    authorize = False
+    async with websockets.connect(f"ws://{ip}:{port}") as conn:
         while True:
-            comm = input("Enter your command : [Register, Login, Send a file, Browse]\n")
-            if comm == "Register":
-                await asyncio.sleep(1)
-                await conn.send("register")
-                register_username = str(input("Username : "))
-                await asyncio.sleep(1)
-                await conn.send(register_username)
-                print("sending username")
-                register_password = str(input("Password : "))
-                await asyncio.sleep(1)
-                await conn.send(register_password)
-                print("sending password")
+            if authorize:
+                comm = input("[Send a file, Browse, Download] : ")
+                
+                if comm == "Send a file":
+                    await sendfile(conn, username)
+                    
+                
+                elif comm == "Browse":
+                    await browse(conn)                    
+                
+                elif comm == "Download":
+                    while True:
+                        comm = input("[Public, Inbox] : ")
+                        if comm == "Public" or comm == "Inbox":
+                            await downloadfile(conn, comm, username)
+                        else:
+                            continue
 
-            elif comm == "Login":
-                check_login = True
-                while check_login:
-                    await asyncio.sleep(1)
-                    await conn.send("login")
-                    login_username = input("Username : ")
-                    await asyncio.sleep(1)
-                    await conn.send(login_username)
-                    login_password = input("Password : ")
-                    await asyncio.sleep(1)
-                    await conn.send(login_password)
-                    await asyncio.sleep(1)
-                    login_status = await conn.recv()
-                    if login_status == "pass":
-                        check_login = not check_login
-                username = login_username
-
-            elif comm == "Send a file":
-                file_path = test_open()
-                title = input("Write your title : ")
-                author = username
-                filename, fileextension = custom_path(file_path)
-                send_mode, dest_user = await find_sendmode(conn)
-                file_data = [title, author, dest_user, filename, fileextension]
-                file_json = json.dumps(file_data)
-                await conn.send(send_mode)
-                await asyncio.sleep(1)
-                await conn.send(file_json)
-                await asyncio.sleep(1)
-                await send(conn, file_path)
-                await asyncio.sleep(1)
-                #await checksenderfile(filepath)
-
-            elif comm == "Browse":
-                browse_comm = find_browse()
-                await asyncio.sleep(1)
-                await conn.send(browse_comm)
-                await asyncio.sleep(1)
-                inbox_list = await conn.recv()
-                for line in inbox_list:
-                    print(line)
+                else:
+                    continue
 
             else:
-                await conn.send(comm)
-                # rawlist = ["boom","nui"]
-                # jsonlist = json.dumps(rawlist)
-                # await asyncio.sleep(1)
-                # await conn.send(jsonlist)
-                # msg = input("msg : ")
-                # await conn.send(msg)
-                # echo1 = await conn.recv()
-                # print(echo1)
-                # echo2 = await conn.recv()
-                # print(echo2)
-                #print("Command not in the list.")
-                # continue
+                comm = input("[Login, Register] : ")
+                
+                if comm == "Register":
+                    await register(conn)
+                
+                elif comm == "Login":
+                    authorize, username = await login(conn)
+                
+                else:
+                    continue
 
 def test_open():
     file_path = input("Enter your file path : ")
@@ -117,7 +83,7 @@ def find_browse():
     elif browse == "sendhistory":
         return "browse_history"
     else:
-        return find_browse()
+        find_browse()
 
 def custom_path(filepath):
     filename_index = -1
@@ -132,7 +98,7 @@ def custom_path(filepath):
     return filename, fileextension
 
 async def checksenderfile(conn, filepath):
-    file_size = check(filepath)
+    file_size = measure(filepath)
     await conn.send("checkfile")
     await asyncio.sleep(1)
     await conn.send(file_size)
@@ -153,7 +119,7 @@ async def send(conn, filepath):
         r = f.read()
     f.close()
 
-def check(filepath):
+def measure(filepath):
     f = open(r"{}".format(filepath), 'r')
     line_size = []
     for line in f:
@@ -163,4 +129,147 @@ def check(filepath):
     line_size_json = json.dumps(line_size)
     return line_size_json
 
-asyncio.get_event_loop().run_until_complete(main())
+def checkregister(username, password):
+    allowchar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    leastlength = 8
+    length_error = "Your username and password must have at least 8 characters."
+    char_error = "Your username and password must contain only alphabets and numbers."
+    if len(username) >= leastlength and len(password) >= leastlength:
+        for char in username:
+            if char in allowchar:
+                continue
+            else:
+                return False, char_error
+
+        for char in password:
+            if char in allowchar:
+                continue
+            else:
+                return False, char_error
+
+        return True, ""
+    else:
+        return False, length_error
+
+async def register(conn):    
+    register_username = input("Username : ")
+    register_password = input("Password : ")
+    checkregis_status, regis_error = checkregister(register_username, register_password)
+    if checkregis_status == True:
+        await asyncio.sleep(1)
+        await conn.send("register")
+
+        await conn.send(register_username)
+        await asyncio.sleep(1)
+
+        await conn.send(register_password)
+        await asyncio.sleep(1)
+
+        confirmregis = await conn.recv()
+        if confirmregis == "True":
+            print("Success to register.")
+        else:
+            print("Your username is already taken. Try use a new one.")
+            await register(conn)
+    else:
+        return print(regis_error)
+
+async def login(conn):
+    await asyncio.sleep(1)
+    await conn.send("login")
+    
+    login_username = input("Username : ")
+    await asyncio.sleep(1)
+    await conn.send(login_username)
+    
+    login_password = input("Password : ")
+    await asyncio.sleep(1)
+    await conn.send(login_password)
+    
+    await asyncio.sleep(1)                        
+    login_status = await conn.recv()
+    
+    if login_status == "True":
+        return True, login_username
+    else:
+        print("Error : Your username or password are wrong.")
+        while True:
+            recur = input("Do you want to try login again? [Yes, No] : ")
+            if recur == "Yes":
+                await login(conn)
+            elif recur == "No":
+                break
+            else:
+                continue
+        return False, None
+
+async def sendfile(conn, username):
+    file_path = test_open()
+    title = input("Write your title : ")
+    author = username
+    filename, fileextension = custom_path(file_path)
+    send_mode, dest_user = await find_sendmode(conn)
+    
+    file_data = [title, author, dest_user, filename, fileextension]
+    file_json = json.dumps(file_data)
+    
+    await conn.send(send_mode)
+    await asyncio.sleep(1)
+    await conn.send(file_json)
+    await asyncio.sleep(1)
+    await send(conn, file_path)
+    await asyncio.sleep(1)
+
+async def browse(conn):
+    browse_comm = find_browse()
+    await conn.send(browse_comm)
+    
+    await asyncio.sleep(1)
+    await conn.send(username)
+    
+    await asyncio.sleep(1)                    
+    json_inbox_list = await conn.recv()
+    inbox_list = json.loads(json_inbox_list)
+    print("[Title, Author, Filename, Type_form]")
+    for line in inbox_list:
+        print(line)
+
+async def downloadfile(conn, comm, username):
+    await conn.send("download")
+    await asyncio.sleep(1)
+
+    await conn.send(username)
+    await asyncio.sleep(1)
+
+    await conn.send(comm)
+    await asyncio.sleep(1)
+    
+    json_filenamelist = await conn.recv()
+    filenamelist = json.loads(json_filenamelist)
+    print(filenamelist)
+    
+    while True:
+        targetfile = input("Choose a file to download : ")
+        if targetfile in filenamelist:
+            await conn.send(targetfile)
+            break
+        else:
+            continue
+    
+    await write(conn, targetfile)
+
+async def write(conn, filename):
+    global default
+    f = open(r"{}{}".format(default, filename), 'w')
+    json_line = await conn.recv()
+    line = json.loads(json_line)
+    while line != "":
+        await asyncio.sleep(1)
+        f.write(line)
+        json_line = await conn.recv()
+        line = json.loads(json_line)
+    f.close()
+
+if __name__ == "__main__":
+    default = "D:\\vs_studio\\sdp_project\\file_transfer_program\\client_save\\" # Enter your path location to save a file.
+    asyncio.get_event_loop().run_until_complete(main())
