@@ -166,10 +166,10 @@ class Server(object):
         f.close()
         return line_size
     
-    async def write(self, conn, filename,):
+    async def write(self, conn, filename):
         f = open(r"{}{}".format(self.default, filename), 'w')
         json_line = await conn.recv()
-        line = json.loads(jsonline)
+        line = json.loads(json_line)
         while line != "":
             print(line)
             await asyncio.sleep(1)
@@ -180,10 +180,12 @@ class Server(object):
     
     async def read(self, conn, filename):
         f = open(r"{}{}".format(self.default, filename), 'r')
-        for line in f:
-            json_line = json.dumps(line)
-            await conn.send(json_line)
+        r = f.read()
+        while r:
+            jsonr = json.dumps(r)
+            await conn.send(jsonr)
             await asyncio.sleep(1)
+            r = f.read()
         f.close()
 
 if __name__ == '__main__':

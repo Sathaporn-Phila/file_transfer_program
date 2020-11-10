@@ -15,7 +15,7 @@ class Client(object):
         async def start(self):
             conn = await websockets.connect(self.uri)
             self.conn = conn
-            await self.conn.send("FUCK U")
+            await self.conn.send()
 
         async def login(self, username, password):
             await self.conn.send(username)

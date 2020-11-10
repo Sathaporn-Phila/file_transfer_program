@@ -54,7 +54,7 @@ def test_open():
 
 async def find_user(conn):
     dest_user = input("Who you want to send to (Username) : ")
-    find = await conn.send("find_user")
+    await conn.send("find_user")
     await asyncio.sleep(1)
     await conn.send(dest_user)
     await asyncio.sleep(1)
@@ -109,7 +109,7 @@ async def checksenderfile(conn, filepath):
     else:
         print("File incompletely send")
 
-async def send(conn, filepath):
+async def read(conn, filepath):
     f = open(r"{}".format(filepath), 'r')
     r = f.read()
     while r:
@@ -217,7 +217,7 @@ async def sendfile(conn, username):
     await asyncio.sleep(1)
     await conn.send(file_json)
     await asyncio.sleep(1)
-    await send(conn, file_path)
+    await read(conn, file_path)
     await asyncio.sleep(1)
 
 async def browse(conn):
