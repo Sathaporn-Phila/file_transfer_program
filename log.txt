@@ -1,0 +1,38 @@
+2020-11-11 08:28:16.656493 : Server initiate.
+2020-11-11 08:28:17.663797 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC5806430> : Connect.
+2020-11-11 08:28:33.369391 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC5806430> : Request to login.
+2020-11-11 08:28:36.371395 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC5806430> : Success to login.
+2020-11-11 08:28:59.633651 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC5806430> : Disconnect.
+2020-11-11 08:29:26.416100 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC58062E0> : Connect.
+2020-11-11 08:29:41.036245 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC58062E0> : Request to login.
+2020-11-11 08:29:44.039142 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC58062E0> : Success to login.
+2020-11-11 08:30:09.853463 : Client <websockets.server.WebSocketServerProtocol object at 0x0000015FC58062E0> : Disconnect.
+2020-11-11 08:36:29.215128 : Server initiate
+2020-11-11 08:36:30.129482 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466430> : Connect.
+2020-11-11 08:36:49.762633 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466430> : Request to login.
+2020-11-11 08:36:52.769328 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466430> : Success to login as randomuser.
+2020-11-11 08:37:17.711523 : User : randomuser export a file as public.
+2020-11-11 08:37:31.226437 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466430> : Disconnect.
+2020-11-11 08:40:30.525438 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C84662E0> : Connect.
+2020-11-11 08:40:41.861381 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C84662E0> : Request to login.
+2020-11-11 08:40:44.865114 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C84662E0> : Success to login as alteruser.
+2020-11-11 08:40:55.889671 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C84662E0> : Disconnect.
+2020-11-11 08:41:44.842293 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466C40> : Connect.
+2020-11-11 08:42:03.548456 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466C40> : Request to login.
+2020-11-11 08:42:06.571196 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466C40> : Success to login as alteruser.
+2020-11-11 08:42:17.077059 : User : alteruser request to browse public.
+2020-11-11 08:42:31.977682 : User : alteruser request to browse inbox.
+2020-11-11 08:42:38.676904 : Client <websockets.server.WebSocketServerProtocol object at 0x00000198C8466C40> : Disconnect.
+2020-11-11 08:45:43.074678 : Server initiate
+2020-11-11 08:45:43.648232 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E36430> : Connect.
+2020-11-11 08:45:57.366286 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E36430> : Request to login.
+2020-11-11 08:46:00.368029 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E36430> : Success to login as alteruser.
+2020-11-11 08:46:16.465317 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E36430> : Disconnect.
+2020-11-11 08:46:47.060030 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E362E0> : Connect.
+2020-11-11 08:47:01.956892 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E362E0> : Request to login.
+2020-11-11 08:47:04.975187 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E362E0> : Success to login as alteruser.
+2020-11-11 08:47:13.737026 : User : alteruser request to browse public.
+2020-11-11 08:47:26.307402 : User : alteruser request to browse inbox.
+2020-11-11 08:47:39.261548 : User : alteruser request to browse history.
+2020-11-11 08:48:01.749558 : User : alteruser request to download a file.
+2020-11-11 08:48:08.830548 : Client <websockets.server.WebSocketServerProtocol object at 0x000001B074E362E0> : Disconnect.

@@ -11,14 +11,14 @@ async def main():
     async with websockets.connect(f"ws://{ip}:{port}") as conn:
         while True:
             if authorize:
-                comm = input("[Send a file, Browse, Download] : ")
+                comm = input("[Export, Browse, Download] : ")
                 
-                if comm == "Send a file":
+                if comm == "Export":
                     await sendfile(conn, username)
                     
                 
                 elif comm == "Browse":
-                    await browse(conn)                    
+                    await browse(conn, username)                    
                 
                 elif comm == "Download":
                     while True:
@@ -27,6 +27,7 @@ async def main():
                             await downloadfile(conn, comm, username)
                         else:
                             continue
+                        break
 
                 else:
                     continue
@@ -70,17 +71,17 @@ async def find_sendmode(conn):
         dest_user = await find_user(conn)
         return "send_direct", dest_user
     elif file_comm == "Public":
-        return "send_public", ""
+        return "send_public", "foo"
     else:
         await find_sendmode(conn)
 
 def find_browse():
-    browse = input("Choose what to browse : [inbox, public, sendhistory]\n")
-    if browse == "inbox":
+    browse = input("[Inbox, Public, Sendhistory] : ")
+    if browse == "Inbox":
         return "browse_inbox"
-    elif browse == "public":
+    elif browse == "Public":
         return "browse_public"                        
-    elif browse == "sendhistory":
+    elif browse == "Sendhistory":
         return "browse_history"
     else:
         find_browse()
@@ -94,7 +95,6 @@ def custom_path(filepath):
     while filepath[fileextension_index] != ".":
         fileextension_index -= 1
     fileextension = filepath[fileextension_index:]
-    print(filename, fileextension)
     return filename, fileextension
 
 async def checksenderfile(conn, filepath):
@@ -111,13 +111,13 @@ async def checksenderfile(conn, filepath):
 
 async def read(conn, filepath):
     f = open(r"{}".format(filepath), 'r')
-    r = f.read()
-    while r:
-        jsonr = json.dumps(r)
-        await conn.send(jsonr)
-        await asyncio.sleep(1)
-        r = f.read()
+    for r in f:
+            print(r)
+            jsonr = json.dumps(r)
+            await conn.send(jsonr)
+            await asyncio.sleep(1)
     f.close()
+    await conn.send(json.dumps("SendingEnd"))
 
 def measure(filepath):
     f = open(r"{}".format(filepath), 'r')
@@ -174,19 +174,17 @@ async def register(conn):
     else:
         return print(regis_error)
 
-async def login(conn):
-    await asyncio.sleep(1)
-    await conn.send("login")
-    
+async def login(conn):    
     login_username = input("Username : ")
+    login_password = input("Password : ")
+    
+    await conn.send("login")
     await asyncio.sleep(1)
     await conn.send(login_username)
-    
-    login_password = input("Password : ")
     await asyncio.sleep(1)
     await conn.send(login_password)
-    
-    await asyncio.sleep(1)                        
+    await asyncio.sleep(1)           
+
     login_status = await conn.recv()
     
     if login_status == "True":
@@ -196,7 +194,9 @@ async def login(conn):
         while True:
             recur = input("Do you want to try login again? [Yes, No] : ")
             if recur == "Yes":
-                await login(conn)
+                authorize, username = await login(conn)
+                return authorize, username
+                break
             elif recur == "No":
                 break
             else:
@@ -215,12 +215,14 @@ async def sendfile(conn, username):
     
     await conn.send(send_mode)
     await asyncio.sleep(1)
+    await conn.send(username)
+    await asyncio.sleep(1)
     await conn.send(file_json)
     await asyncio.sleep(1)
     await read(conn, file_path)
     await asyncio.sleep(1)
 
-async def browse(conn):
+async def browse(conn, username):
     browse_comm = find_browse()
     await conn.send(browse_comm)
     
@@ -230,9 +232,12 @@ async def browse(conn):
     await asyncio.sleep(1)                    
     json_inbox_list = await conn.recv()
     inbox_list = json.loads(json_inbox_list)
-    print("[Title, Author, Filename, Type_form]")
-    for line in inbox_list:
-        print(line)
+    if inbox_list == []:
+        print("Empty")
+    else:
+        print("[Title, Author, Filename, Type_form]")
+        for line in inbox_list:
+            print(line)
 
 async def downloadfile(conn, comm, username):
     await conn.send("download")
@@ -263,12 +268,14 @@ async def write(conn, filename):
     f = open(r"{}{}".format(default, filename), 'w')
     json_line = await conn.recv()
     line = json.loads(json_line)
-    while line != "":
+    while line != "SendingEnd":
+        print(line)
         await asyncio.sleep(1)
         f.write(line)
         json_line = await conn.recv()
         line = json.loads(json_line)
     f.close()
+    print("END")
 
 if __name__ == "__main__":
     default = "D:\\vs_studio\\sdp_project\\file_transfer_program\\client_save\\" # Enter your path location to save a file.
