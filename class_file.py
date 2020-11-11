@@ -1,5 +1,6 @@
 import asyncio
 import websockets
+import json
 
 class File:
     
@@ -7,7 +8,7 @@ class File:
         self.filename = filename
     
     def read(self):
-        f = open(self.filename, 'r')
+        f = open(r"{}".format(self.filename), 'r')
         for line in f:
             print(line)
         f.close()
@@ -20,24 +21,27 @@ class File:
             r = f.read(1024)
 
     async def send(self):
-        f = open(self.filename, 'r')
+        f = open(r"{}".format(self.filename), 'r')
         for line in f:
-            await websocket.send(line)
+            await conn.send(line)
+            asyncio.sleep(1)
         f.close()
     
     async def write(self):
-        f = open(self.filename, 'w')
-        line = await websocket.recv()
+        f = open(r"{}".format(self.filename), 'x')
+        line = await conn.recv()
         while line:
             f.write(line)
-            line = await websocket.recv()
+            line = await conn.recv()
+            asyncio.sleep(1)
         f.close()
     
     def check(self):
-        f = open(self.filename, 'r')
+        f = open(r"{}".format(self.filename), 'r')
         line_size = []
         for line in f:
             size = len(line)
             line_size.append(size)
         f.close()
-        return line_size
+        line_size_json = json.dumps(line_size)
+        return line_size_json
