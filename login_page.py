@@ -1,16 +1,18 @@
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import sys
 import file_database
 import index_page,register_page
-from client import *
 
 class Login_page(QWidget):
 
     switch_window = pyqtSignal(str)
 
     def __init__(self):
+        self.app = QApplication(sys.argv)
+        
         self.app_index_page = None
         super().__init__()
         self.init_ui()
@@ -75,9 +77,7 @@ class Login_page(QWidget):
         self.database = file_database.File_database()
         self.username = self.database.login(self.username,self.password)
         if (self.username != None) :
-            
             self.switch_window.emit(self.username)
-        
             
     def register(self):
         self.dialog = register_page.RegisterPage(self)
@@ -87,8 +87,6 @@ class Controller :
     def __init__(self):
         self.app = QApplication(sys.argv)
         self.show_login()
-        #self.c = Client("localhost", "8000")
-        #self.c.do_start()
     def show_login(self):
         self.loginPage = Login_page()
         self.loginPage.switch_window.connect(lambda:self.show_index_page(self.loginPage.username))
@@ -96,14 +94,16 @@ class Controller :
     def show_index_page(self,username):
         self.main_page = index_page.PublicPage(username)
         self.main_page.my_database = self.loginPage.database
+        print(self.main_page.my_database.get_send_history(),self.main_page.my_database.get_inbox())
         self.main_page.switch_window.connect(lambda:self.show_login_again())
         self.loginPage.close()
         self.main_page.show()
     def show_login_again(self):
-        print(1)
         self.main_page.close()
+        self.main_page.background_thread.terminate()
         self.show_login()
 
-if __name__ == "__main__":
+def test():
     program_test = Controller()
     sys.exit(program_test.app.exec_())
+test()
